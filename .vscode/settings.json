@@ -1,0 +1,33 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/out": true
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/node_modules": true,
+    },
+    "files.insertFinalNewline": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "editor.rulers": [
+        140
+    ],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "eslint.alwaysShowStatus": true,
+    "eslint.format.enable": true,
+    "eslint.lintTask.enable": true,
+    "eslint.packageManager": "yarn"
+}
