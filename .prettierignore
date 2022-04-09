@@ -1,0 +1,10 @@
+**/node_modules
+out/
+dist/
+vendor/
+yarn.lock
+npm-debug.log
+yarn-error.log
+.DS_Store
+*.md
+*.yml
