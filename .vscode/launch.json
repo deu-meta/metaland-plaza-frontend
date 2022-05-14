@@ -4,7 +4,7 @@
     {
       "name": "Launch Chrome against localhost",
       "type": "pwa-chrome",
-      "preLaunchTask": "npm: start",
+      "preLaunchTask": "Launch React",
       "request": "launch",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"

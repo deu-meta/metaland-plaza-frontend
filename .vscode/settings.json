@@ -10,6 +10,7 @@
         "**/node_modules": true,
     },
     "files.insertFinalNewline": true,
+    "files.eol": "\r\n",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
