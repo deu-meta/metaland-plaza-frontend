@@ -42,6 +42,7 @@ module.exports = {
 		},
 	},
 	rules: {
+		'react/prop-types': 'off',
 		'import/order': [
 			'error',
 			{
@@ -53,5 +54,7 @@ module.exports = {
 				'newlines-between': 'always',
 			},
 		],
+		'import/named': 'warn',
 	},
 };
+
