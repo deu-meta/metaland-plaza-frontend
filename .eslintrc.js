@@ -41,6 +41,7 @@ module.exports = {
 			},
 		},
 	},
+	ignorePatterns: ['craco.config.js'],
 	rules: {
 		'react/prop-types': 'off',
 		'import/order': [
