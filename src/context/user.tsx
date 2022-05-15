@@ -43,7 +43,22 @@ const UserProvider: React.FC = props => {
 	useEffect(() => {
 		if (refresh.data !== undefined) {
 			setAccessToken(refresh.data.access_token);
-			setUser(jwt_decode<IUser>(refresh.data.access_token));
+
+			const decoded = jwt_decode<{
+				given_name: string;
+				job_title: string;
+				display_name: string;
+				email: string;
+				role: string;
+			}>(refresh.data.access_token);
+
+			setUser({
+				givenName: decoded.given_name,
+				jobTitle: decoded.job_title,
+				displayName: decoded.display_name,
+				email: decoded.email,
+				role: decoded.role,
+			});
 		}
 	}, [refresh.data]);
 
