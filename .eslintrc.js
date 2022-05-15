@@ -43,6 +43,7 @@ module.exports = {
 	},
 	ignorePatterns: ['craco.config.js'],
 	rules: {
+		'prettier/prettier': 'warn',
 		'react/prop-types': 'off',
 		'import/order': [
 			'error',
@@ -58,4 +59,3 @@ module.exports = {
 		'import/named': 'warn',
 	},
 };
-
