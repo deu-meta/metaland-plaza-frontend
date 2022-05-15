@@ -6,6 +6,6 @@ type IUser = {
 	displayName: string;
 	givenName: string;
 	jobTitle: string;
-	mail: string;
+	email: string;
 	role: string;
 };
