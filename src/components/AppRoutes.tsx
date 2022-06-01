@@ -21,6 +21,8 @@ const AppRoutes: React.FC = () => {
 						</Routes>
 					}
 				/>
+				<Route path="profile" element={<Profile />} />
+
 				<Route path="navbar" element={<NavBarEdit />} />
 				<Route path="users" element={<Users />} />
 			</Route>
