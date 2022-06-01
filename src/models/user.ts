@@ -1,11 +1,10 @@
-export type { IProvider, IUser };
-
-type IProvider = 'office365' | 'google' | 'naver';
+export type { IUser };
 
 type IUser = {
-	displayName: string;
-	givenName: string;
-	jobTitle: string;
+	display_name: string;
+	given_name: string;
+	job_title: string;
 	email: string;
-	role: string;
+	role: 'default' | 'student' | 'staff' | 'admin';
+	provider: 'microsoft' | 'kakao';
 };

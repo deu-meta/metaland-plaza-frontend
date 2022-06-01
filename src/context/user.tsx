@@ -1,11 +1,12 @@
+import { AxiosRequestHeaders } from 'axios';
 import jwt_decode from 'jwt-decode';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
 import { IUser } from '../models/user';
 import { accountsApiClient, setAccessToken } from '../services/api';
 
-export { UserContext, UserProvider, useUser, useUserRefresh, useUserLogout, useUserContext };
+export { UserContext, UserProvider };
 
 const UserContext = createContext<{
 	user: IUser | null;
@@ -13,19 +14,21 @@ const UserContext = createContext<{
 	logout: UseQueryResult;
 } | null>(null);
 
+const withoutAuthorization = {
+	transformRequest: (data: any, headers: AxiosRequestHeaders | undefined) => {
+		// refresh endpoint only accepts cookie, NOT Authorization header
+		delete (headers as any)?.common['Authorization']; // axios type mismatch WTF
+		return data;
+	},
+};
+
 const UserProvider: React.FC = props => {
 	const { children } = props;
 	const refresh = useQuery(
 		'/jwt/refresh',
 		() =>
 			accountsApiClient
-				.post<{ access_token: string }>('/jwt/refresh', undefined, {
-					transformRequest: (data, headers) => {
-						// refresh endpoint only accepts cookie, NOT Authorization header
-						delete (headers as any)?.common['Authorization']; // axios type mismatch WTF
-						return data;
-					},
-				})
+				.post<{ access_token: string }>('/jwt/refresh', undefined, withoutAuthorization)
 				.then(response => response.data),
 		{
 			retry: false,
@@ -33,7 +36,7 @@ const UserProvider: React.FC = props => {
 			refetchOnWindowFocus: false,
 		},
 	);
-	const logout = useQuery('/jwt/delete', () => accountsApiClient.delete('/jwt/delete'), {
+	const logout = useQuery('/jwt/delete', () => accountsApiClient.delete('/jwt/delete', withoutAuthorization), {
 		enabled: false,
 	});
 
@@ -49,15 +52,17 @@ const UserProvider: React.FC = props => {
 				job_title: string;
 				display_name: string;
 				email: string;
-				role: string;
+				role: IUser['role'];
+				provider: IUser['provider'];
 			}>(refresh.data.access_token);
 
 			setUser({
-				givenName: decoded.given_name,
-				jobTitle: decoded.job_title,
-				displayName: decoded.display_name,
+				given_name: decoded.given_name,
+				job_title: decoded.job_title,
+				display_name: decoded.display_name,
 				email: decoded.email,
 				role: decoded.role,
+				provider: decoded.provider,
 			});
 		}
 	}, [refresh.data]);
@@ -91,25 +96,3 @@ const UserProvider: React.FC = props => {
 		</UserContext.Provider>
 	);
 };
-
-function useUser() {
-	const { user } = useContext(UserContext)!;
-
-	return user;
-}
-
-function useUserRefresh() {
-	const { refresh } = useContext(UserContext)!;
-
-	return refresh;
-}
-
-function useUserLogout() {
-	const { logout } = useContext(UserContext)!;
-
-	return logout;
-}
-
-function useUserContext() {
-	return useContext(UserContext)!;
-}
