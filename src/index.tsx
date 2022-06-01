@@ -8,6 +8,8 @@ import { App } from './components/App';
 import { UserProvider } from './context/user';
 import { queryClient } from './services/api';
 
+import 'react-notion-x/src/styles.css';
+
 ReactDOM.render(
 	<React.StrictMode>
 		<RecoilRoot>
