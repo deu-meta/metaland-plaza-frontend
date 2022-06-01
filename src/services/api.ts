@@ -24,8 +24,10 @@ const accountsApiClient = axios.create({
 function setAccessToken(accessToken: string | null) {
 	if (!accessToken) {
 		delete accountsApiClient.defaults.headers.common['Authorization'];
+		delete plazaApiClient.defaults.headers.common['Authorization'];
 	} else {
 		accountsApiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+		plazaApiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 	}
 }
 
@@ -57,4 +59,5 @@ accountsApiClient.interceptors.response.use(
 
 const plazaApiClient = axios.create({
 	baseURL: PLAZA_API_URL,
+	withCredentials: true,
 });
