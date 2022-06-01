@@ -21,6 +21,7 @@ const AppRoutes: React.FC = () => {
 						</Routes>
 					}
 				/>
+				<Route path="map" element={<MinecraftMap />} />
 				<Route path="profile" element={<Profile />} />
 
 				<Route path="navbar" element={<NavBarEdit />} />
