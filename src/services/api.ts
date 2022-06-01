@@ -9,7 +9,7 @@ const PLAZA_API_URL = process.env.REACT_APP_PLAZA_API_URL || 'http://localhost:8
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			retry: 1,
+			retry: 0,
 			refetchInterval: false,
 			refetchOnWindowFocus: false,
 		},
