@@ -124,7 +124,7 @@ const MtlNavBar: React.FC = () => {
 					</StaffOnly>
 
 					{user === null ? (
-						<MtlNavBarButton link="/oauth2">로그인</MtlNavBarButton>
+						<MtlNavBarButton link="/login">로그인</MtlNavBarButton>
 					) : (
 						<MtlNavBarButton link="/profile">{user.display_name}</MtlNavBarButton>
 					)}
