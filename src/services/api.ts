@@ -1,15 +1,16 @@
 import axios from 'axios';
 import { QueryClient } from 'react-query';
 
-export { queryClient, accountsApiClient, setAccessToken, plazaApiClient };
+export { queryClient, accountsApiClient, setAccessToken, plazaApiClient, notionApiClient };
 
 const ACCOUNTS_API_URL = process.env.REACT_APP_ACCOUNTS_API_URL || 'http://localhost:8000';
 const PLAZA_API_URL = process.env.REACT_APP_PLAZA_API_URL || 'http://localhost:8001';
+const NOTION_API_URL = process.env.REACT_APP_NOTION_API_URL || 'http://localhost:8002';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			retry: 1,
+			retry: 0,
 			refetchInterval: false,
 			refetchOnWindowFocus: false,
 		},
@@ -24,10 +25,14 @@ const accountsApiClient = axios.create({
 function setAccessToken(accessToken: string | null) {
 	if (!accessToken) {
 		delete accountsApiClient.defaults.headers.common['Authorization'];
+		delete plazaApiClient.defaults.headers.common['Authorization'];
 	} else {
 		accountsApiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+		plazaApiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 	}
 }
+
+if (process.env.NODE_ENV !== 'production') (globalThis as any).setAccessToken = setAccessToken;
 
 accountsApiClient.interceptors.response.use(
 	response => response,
@@ -57,4 +62,9 @@ accountsApiClient.interceptors.response.use(
 
 const plazaApiClient = axios.create({
 	baseURL: PLAZA_API_URL,
+	withCredentials: true,
+});
+
+const notionApiClient = axios.create({
+	baseURL: NOTION_API_URL,
 });

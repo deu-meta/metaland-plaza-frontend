@@ -27,6 +27,28 @@ function useTheme() {
 					h1: {
 						fontWeight: 700,
 					},
+					allVariants: {
+						wordBreak: 'keep-all',
+					},
+				},
+				components: {
+					MuiButton: {
+						styleOverrides: {
+							root: {
+								textTransform: 'capitalize',
+							},
+						},
+					},
+					MuiTextField: {
+						defaultProps: {
+							variant: 'filled',
+						},
+					},
+					MuiSelect: {
+						defaultProps: {
+							variant: 'standard',
+						},
+					},
 				},
 			}),
 		[],

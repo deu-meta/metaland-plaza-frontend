@@ -1,13 +1,37 @@
-import { AppBar, Box, Button, ButtonProps, Container, Toolbar, Typography } from '@mui/material';
-import React from 'react';
-import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
+import { Construction, Menu as MenuIcon } from '@mui/icons-material';
+import {
+	AppBar,
+	Box,
+	Button,
+	Container,
+	Divider,
+	Drawer,
+	IconButton,
+	List,
+	ListItemButton,
+	ListItemText,
+	MenuItem,
+	Toolbar,
+	Typography,
+	Menu,
+} from '@mui/material';
+import type { ButtonProps } from '@mui/material';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { useUser } from '../../context/user';
-import { NavLink } from '../../models/navlink';
-import { plazaApiClient } from '../../services/api';
+import { useNavlinks } from '../../actions/navbar';
+import { useUser } from '../../actions/user';
+import { MtlSpacer } from '../basics/MtlSpacer';
+import { StaffOnly } from '../roles/staff';
 
 export { MtlNavBar };
+
+const drawerWidth = 240;
+
+const staffMenuItems = [
+	{ name: '네비게이션 바 편집', link: '/navbar' },
+	{ name: '사용자 목록', link: '/users' },
+];
 
 const MtlNavBarButton: React.FC<ButtonProps & { link: string }> = props => {
 	const { link, children, ...buttonProps } = props;
@@ -23,8 +47,13 @@ const MtlNavBarButton: React.FC<ButtonProps & { link: string }> = props => {
 };
 
 const MtlNavBar: React.FC = () => {
-	const { data: navlinks } = useQuery<NavLink[]>('navlinks', () => plazaApiClient.get('/navlinks/').then(res => res.data));
+	const { homeNavlink, navlinks } = useNavlinks();
 	const user = useUser();
+	const navigate = useNavigate();
+
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [staffMenuAnchorEl, setStaffMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [staffMenuOpen, setStaffMenuOpen] = useState(false);
 
 	return (
 		<AppBar
@@ -35,31 +64,108 @@ const MtlNavBar: React.FC = () => {
 			}}>
 			<Container maxWidth="lg">
 				<Toolbar disableGutters>
-					<Typography variant="h4" sx={{ fontWeight: 700 }}>
-						Oasis
-					</Typography>
+					<IconButton color="inherit" edge="start" onClick={() => setDrawerOpen(true)} sx={{ mr: 2, display: { md: 'none' } }}>
+						<MenuIcon />
+					</IconButton>
 
-					<Box marginLeft={3} />
+					<Link to={homeNavlink.link} style={{ textDecoration: 'none', color: 'unset' }}>
+						<Typography variant="h4" sx={{ fontWeight: 700 }}>
+							{homeNavlink.name}
+						</Typography>
+					</Link>
 
-					{/* md 미만에서 보일 컨텐츠들 */}
-					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}></Box>
+					<MtlSpacer horizontal={24} />
 
-					{/* md 이상에서 보일 컨텐츠들 */}
+					{/* 데스크탑에서 보일 컨텐츠들 */}
 					<Box
 						sx={{
 							flexGrow: 1,
 							display: { xs: 'none', md: 'flex' },
 						}}>
-						{navlinks?.map(navlink => (
-							<MtlNavBarButton key={navlink.name} link={navlink.link}>
-								{navlink.name}
+						{navlinks?.map(({ name, link }) => (
+							<MtlNavBarButton key={name} link={link}>
+								{name}
 							</MtlNavBarButton>
 						))}
 					</Box>
 
-					{user === null ? <MtlNavBarButton link="/oauth2">로그인</MtlNavBarButton> : user.displayName}
+					<Box marginLeft="auto" />
+
+					<StaffOnly>
+						<IconButton
+							color="inherit"
+							edge="end"
+							onClick={e => {
+								setStaffMenuOpen(true);
+								setStaffMenuAnchorEl(e.currentTarget);
+							}}>
+							<Construction />
+						</IconButton>
+
+						<Menu
+							open={staffMenuOpen}
+							anchorEl={staffMenuAnchorEl}
+							transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+							anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+							onClose={() => setStaffMenuOpen(false)}>
+							{staffMenuItems.map(({ name, link }) => (
+								<MenuItem
+									key={name}
+									onClick={() => {
+										navigate(link);
+										setStaffMenuOpen(false);
+									}}>
+									{name}
+								</MenuItem>
+							))}
+						</Menu>
+
+						<MtlSpacer horizontal={16} />
+					</StaffOnly>
+
+					{user === null ? (
+						<MtlNavBarButton link="/oauth2">로그인</MtlNavBarButton>
+					) : (
+						<MtlNavBarButton link="/profile">{user.display_name}</MtlNavBarButton>
+					)}
 				</Toolbar>
 			</Container>
+
+			{/* 모바일 화면에서만 표시될 drawer */}
+			<Drawer
+				container={window!.document.body}
+				variant="temporary"
+				open={drawerOpen}
+				onClose={() => setDrawerOpen(false)}
+				ModalProps={{ keepMounted: true }}
+				sx={{
+					display: { xs: 'block', md: 'none' },
+					'& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+				}}>
+				<List>
+					<ListItemButton
+						onClick={() => {
+							navigate(homeNavlink.link);
+							setDrawerOpen(false);
+						}}>
+						<ListItemText primary={homeNavlink.name} primaryTypographyProps={{ variant: 'h4', sx: { fontWeight: 700 } }} />
+					</ListItemButton>
+				</List>
+				<Divider />
+				<List>
+					{navlinks?.map(({ name, link }) => (
+						<ListItemButton key={name}>
+							<ListItemText
+								primary={name}
+								onClick={() => {
+									navigate(link);
+									setDrawerOpen(false);
+								}}
+							/>
+						</ListItemButton>
+					))}
+				</List>
+			</Drawer>
 		</AppBar>
 	);
 };

@@ -1,21 +1,20 @@
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import React from 'react';
 import { Navigate } from 'react-router';
 
-import { useUserRefresh } from '../../context/user';
+import { useUserRefresh } from '../../actions/user';
 import { MtlDialog, MtlDialogContent, MtlDialogTitle } from '../basics/MtlDialog';
-export { OAuth2Index, OAuth2Callback };
+import { MtlOAuth2LoginButton } from '../basics/MtlOAuth2LoginButton';
+import { MtlPageContents } from '../basics/MtlPageContents';
+import { MtlSpacer } from '../basics/MtlSpacer';
+
+export { Login, LoginCallback };
 
 const ACCOUNTS_API_URL = process.env.REACT_APP_ACCOUNTS_API_URL;
 
-const OAuth2Index: React.FC = () => {
+const Login: React.FC = () => {
 	return (
-		<Box
-			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-			}}>
+		<MtlPageContents center>
 			<MtlDialog>
 				<MtlDialogTitle>Oasis Login</MtlDialogTitle>
 				<MtlDialogContent>
@@ -23,19 +22,28 @@ const OAuth2Index: React.FC = () => {
 					계정으로 로그인해주세요.
 				</MtlDialogContent>
 			</MtlDialog>
-			<Box marginTop={6}></Box>
 
-			<Button
-				variant="contained"
-				size="large"
-				onClick={() => (window.location.href = new URL('/jwt/microsoft/login', ACCOUNTS_API_URL).toString())}>
-				Microsoft로 로그인하기
-			</Button>
-		</Box>
+			<MtlSpacer vertical={60} />
+
+			<Box
+				sx={{
+					'& > *+*': {
+						marginTop: 1.5,
+					},
+				}}>
+				{(['microsoft', 'kakao'] as const).map(provider => (
+					<MtlOAuth2LoginButton
+						key={provider}
+						provider={provider}
+						href={new URL(`/jwt/${provider}/login`, ACCOUNTS_API_URL).toString()}
+					/>
+				))}
+			</Box>
+		</MtlPageContents>
 	);
 };
 
-const OAuth2Callback: React.FC = () => {
+const LoginCallback: React.FC = () => {
 	const { isLoading, isError, error } = useUserRefresh();
 
 	return (
