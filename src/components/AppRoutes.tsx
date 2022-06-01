@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router';
 
 import { MtlBaseLayout } from './layouts/MtlBaseLayout';
 import { Index } from './pages/Index';
-import { OAuth2Routes } from './routes/OAuth2Routes';
+import { Login, LoginCallback } from './pages/Login';
 
 export { AppRoutes };
 
@@ -12,7 +12,15 @@ const AppRoutes: React.FC = () => {
 		<Routes>
 			<Route path="/" element={<MtlBaseLayout />}>
 				<Route index element={<Index />} />
-				<Route path="oauth2/*" element={<OAuth2Routes />} />
+				<Route
+					path="login/*"
+					element={
+						<Routes>
+							<Route index element={<Login />} />
+							<Route path="callback" element={<LoginCallback />} />
+						</Routes>
+					}
+				/>
 			</Route>
 		</Routes>
 	);
