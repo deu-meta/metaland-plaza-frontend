@@ -1,6 +1,6 @@
-export type { NavLink };
+export type { INavLink };
 
-type NavLink = {
+type INavLink = {
 	name: string;
 	link: string;
 };
