@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { QueryClient } from 'react-query';
 
-export { queryClient, accountsApiClient, setAccessToken, plazaApiClient };
+export { queryClient, accountsApiClient, setAccessToken, plazaApiClient, notionApiClient };
 
 const ACCOUNTS_API_URL = process.env.REACT_APP_ACCOUNTS_API_URL || 'http://localhost:8000';
 const PLAZA_API_URL = process.env.REACT_APP_PLAZA_API_URL || 'http://localhost:8001';
+const NOTION_API_URL = process.env.REACT_APP_NOTION_API_URL || 'http://localhost:8002';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -62,4 +63,8 @@ accountsApiClient.interceptors.response.use(
 const plazaApiClient = axios.create({
 	baseURL: PLAZA_API_URL,
 	withCredentials: true,
+});
+
+const notionApiClient = axios.create({
+	baseURL: NOTION_API_URL,
 });
