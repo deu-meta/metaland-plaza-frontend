@@ -31,6 +31,8 @@ function setAccessToken(accessToken: string | null) {
 	}
 }
 
+if (process.env.NODE_ENV !== 'production') (globalThis as any).setAccessToken = setAccessToken;
+
 accountsApiClient.interceptors.response.use(
 	response => response,
 	async error => {
