@@ -17,6 +17,7 @@ const UserContext = createContext<{
 const withoutAuthorization = {
 	transformRequest: (data: any, headers: AxiosRequestHeaders | undefined) => {
 		// refresh endpoint only accepts cookie, NOT Authorization header
+		delete (headers as any)?.common['authorization'];
 		delete (headers as any)?.common['Authorization']; // axios type mismatch WTF
 		return data;
 	},
