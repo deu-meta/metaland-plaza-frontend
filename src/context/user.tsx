@@ -42,6 +42,12 @@ const UserProvider: React.FC = props => {
 
 	const [user, setUser] = useState<IUser | null>(JSON.parse(localStorage.getItem('user') || 'null'));
 
+	const [initialRefreshDone, setInitialRefreshDone] = useState(false);
+
+	useEffect(() => {
+		refresh.refetch().then(() => setInitialRefreshDone(true));
+	}, []);
+
 	// login (or refresh) and set user data
 	useEffect(() => {
 		if (refresh.data !== undefined) {
@@ -92,7 +98,7 @@ const UserProvider: React.FC = props => {
 				refresh,
 				logout,
 			}}>
-			{children}
+			{initialRefreshDone && children}
 		</UserContext.Provider>
 	);
 };
