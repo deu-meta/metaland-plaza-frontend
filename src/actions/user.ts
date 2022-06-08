@@ -6,7 +6,7 @@ import { IPaginated } from '../models/pagination';
 import { IUser } from '../models/user';
 import { accountsApiClient } from '../services/api';
 
-export { useUser, useUserRefresh, useUserLogout, useUserContext, useUserMe, useUsers, useUserUpdateRole };
+export { useUser, useUserRefresh, useUserLogout, useUserContext, useUserMe, useUsers, useUserEdit };
 
 function useUser() {
 	const { user } = useContext(UserContext)!;
@@ -38,9 +38,9 @@ function useUsers(page: number) {
 	return useQuery('users', () => accountsApiClient.get<IPaginated<IUser[]>>(`/users?page=${page}`).then(response => response.data));
 }
 
-function useUserUpdateRole(options?: Parameters<typeof useMutation>[2]) {
-	return useMutation<unknown, unknown, Pick<IUser, 'email' | 'role'>>(
-		user => accountsApiClient.put(`/admin/update-role?email=${user.email}&role=${user.role}`, user).then(response => response.data),
+function useUserEdit(options?: Parameters<typeof useMutation>[2]) {
+	return useMutation<unknown, unknown, Pick<IUser, 'id'> & Partial<Omit<IUser, 'date_joined' | 'last_login'>>>(
+		user => accountsApiClient.put(`/users/${user.id}`, user).then(response => response.data),
 		options,
 	);
 }

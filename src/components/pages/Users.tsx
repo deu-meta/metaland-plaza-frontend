@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 
-import { useUsers, useUserUpdateRole } from '../../actions/user';
+import { useUsers, useUserEdit } from '../../actions/user';
 import { IUser } from '../../models/user';
 import { MtlPageContents } from '../basics/MtlPageContents';
 import { MtlPageTitle } from '../basics/MtlPageTitle';
@@ -27,7 +27,7 @@ export { Users };
 const Users: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const { data, refetch } = useUsers(page);
-	const userUpdateRole = useUserUpdateRole({
+	const userEdit = useUserEdit({
 		onSuccess: () => {
 			refetch();
 		},
@@ -95,8 +95,8 @@ const Users: React.FC = () => {
 										role={role}
 										disabled={role === focusedUser.role}
 										onClick={() => {
-											userUpdateRole.mutate({
-												email: focusedUser.email,
+											userEdit.mutate({
+												id: focusedUser.id,
 												role: role,
 											});
 											setFocusedUser(null);
