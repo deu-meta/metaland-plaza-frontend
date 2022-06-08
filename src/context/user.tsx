@@ -55,21 +55,27 @@ const UserProvider: React.FC = props => {
 			setAccessToken(refresh.data.access_token);
 
 			const decoded = jwt_decode<{
+				sub: string;
 				given_name: string;
 				job_title: string;
 				display_name: string;
 				email: string;
 				role: IUser['role'];
 				provider: IUser['provider'];
+				date_joined: string;
+				last_login: string;
 			}>(refresh.data.access_token);
 
 			setUser({
+				id: decoded.sub,
 				given_name: decoded.given_name,
 				job_title: decoded.job_title,
 				display_name: decoded.display_name,
 				email: decoded.email,
 				role: decoded.role,
 				provider: decoded.provider,
+				date_joined: new Date(decoded.date_joined),
+				last_login: new Date(decoded.last_login),
 			});
 		}
 	}, [refresh.data]);
