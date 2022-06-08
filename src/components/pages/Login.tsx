@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import React, { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { useUserRefresh } from '../../actions/user';
 import { MtlDialog, MtlDialogContent, MtlDialogTitle } from '../basics/MtlDialog';
@@ -37,7 +38,14 @@ const openLoginWindow = (url: string, name: string) => {
 	previousUrl = url;
 };
 
+type LoginReason = 'minecraft-account' | null;
+
 const Login: React.FC = () => {
+	const [searchParams, _] = useSearchParams();
+
+	const reason: LoginReason = searchParams.get('reason') as LoginReason;
+	const redirectUrlWhenSuccessLogin = reason === 'minecraft-account' ? `/minecraft-accounts/verify/${searchParams.get('code')}` : '/';
+
 	const onMessage = (e: MessageEvent) => {
 		// Do we trust the sender of this message? (might be
 		// different from what we originally opened, for example).
@@ -49,8 +57,8 @@ const Login: React.FC = () => {
 		if (data?.type === 'oauth2') {
 			// when login success, go to main page
 			if (data?.result === 'success') {
-				console.log('Successfully authenticated, redirect to / ..');
-				window.location.href = '/';
+				console.log(`Successfully authenticated, redirect to ${redirectUrlWhenSuccessLogin} ..`);
+				window.location.href = redirectUrlWhenSuccessLogin;
 			}
 		}
 	};
