@@ -17,17 +17,12 @@ export { AppRoutes };
 const AppRoutes: React.FC = () => {
 	return (
 		<Routes>
+			{/* LoginCallback do not use main layout */}
+			<Route path="/login/callback" element={<LoginCallback />} />
+
 			<Route path="/" element={<MtlBaseLayout />}>
 				<Route index element={<Index />} />
-				<Route
-					path="login/*"
-					element={
-						<Routes>
-							<Route index element={<Login />} />
-							<Route path="callback" element={<LoginCallback />} />
-						</Routes>
-					}
-				/>
+				<Route path="login" element={<Login />} />
 				<Route
 					path="notices/*"
 					element={
