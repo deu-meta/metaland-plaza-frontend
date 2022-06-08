@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router';
 import { MtlBaseLayout } from './layouts/MtlBaseLayout';
 import { Index } from './pages/Index';
 import { Login, LoginCallback } from './pages/Login';
+import { MinecraftAccountVerify } from './pages/MinecraftAccountVerify';
 import { MinecraftMap } from './pages/MinecraftMap';
 import { NavBarEdit } from './pages/NavBarEdit';
 import { NoticeAdd } from './pages/NoticeAdd';
@@ -38,6 +39,8 @@ const AppRoutes: React.FC = () => {
 
 				<Route path="navbar" element={<NavBarEdit />} />
 				<Route path="users" element={<Users />} />
+
+				<Route path="minecraft-accounts/verify/:code" element={<MinecraftAccountVerify />} />
 			</Route>
 		</Routes>
 	);
