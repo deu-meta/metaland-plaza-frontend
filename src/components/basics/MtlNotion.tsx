@@ -65,6 +65,7 @@ const MtlNotion: React.FC<MtlNotionProps> = props => {
 						Equation,
 						Modal,
 					}}
+					disableHeader
 					{...notionRendererProps}
 				/>
 			</div>
