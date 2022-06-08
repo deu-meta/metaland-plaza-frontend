@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
-import React from 'react';
-import { Navigate } from 'react-router';
+import React, { useEffect } from 'react';
 
 import { useUserRefresh } from '../../actions/user';
 import { MtlDialog, MtlDialogContent, MtlDialogTitle } from '../basics/MtlDialog';
@@ -12,7 +11,55 @@ export { Login, LoginCallback };
 
 const ACCOUNTS_API_URL = process.env.REACT_APP_ACCOUNTS_API_URL;
 
+let windowObjectReference: Window | null = null;
+let previousUrl: string | null = null;
+
+const openLoginWindow = (url: string, name: string) => {
+	const windowFeatures = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
+
+	if (windowObjectReference === null || windowObjectReference.closed) {
+		// if the pointer to the window object in memory does not exist
+		// or if such pointer exists but the window was closed
+		windowObjectReference = window.open(url, name, windowFeatures);
+	} else if (previousUrl !== url) {
+		// if the resource to load is different,
+		// then we load it in the already opened secondary window and then
+		// we bring such window back on top/in front of its parent window.
+		windowObjectReference = window.open(url, name, windowFeatures);
+		windowObjectReference?.focus();
+	} else {
+		// else the window reference must exist and the window
+		// is not closed; therefore, we can bring it back on top of any other
+		// window with the focus() method. There would be no need to re-create
+		// the window or to reload the referenced resource.
+		windowObjectReference.focus();
+	}
+	previousUrl = url;
+};
+
 const Login: React.FC = () => {
+	const onMessage = (e: MessageEvent) => {
+		// Do we trust the sender of this message? (might be
+		// different from what we originally opened, for example).
+		if (e.origin !== window.location.origin) return;
+
+		const data = e.data;
+		console.log(data);
+
+		if (data?.type === 'oauth2') {
+			// when login success, go to main page
+			if (data?.result === 'success') {
+				console.log('Successfully authenticated, redirect to / ..');
+				window.location.href = '/';
+			}
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener('message', onMessage);
+
+		return () => window.removeEventListener('message', onMessage);
+	}, []);
 	return (
 		<MtlPageContents center>
 			<MtlDialog>
@@ -35,7 +82,7 @@ const Login: React.FC = () => {
 					<MtlOAuth2LoginButton
 						key={provider}
 						provider={provider}
-						href={new URL(`/jwt/${provider}/login`, ACCOUNTS_API_URL).toString()}
+						onClick={() => openLoginWindow(new URL(`/jwt/${provider}/login`, ACCOUNTS_API_URL).toString(), provider)}
 					/>
 				))}
 			</Box>
@@ -44,7 +91,21 @@ const Login: React.FC = () => {
 };
 
 const LoginCallback: React.FC = () => {
-	const { isLoading, isError, error } = useUserRefresh();
+	const { isSuccess } = useUserRefresh();
+
+	useEffect(() => {
+		if (isSuccess) {
+			if (window.opener) {
+				// notify window closed
+				window.opener.postMessage({
+					type: 'oauth2',
+					result: 'success',
+				});
+				// close popup
+				window.close();
+			}
+		}
+	}, [isSuccess]);
 
 	return (
 		<Box
@@ -53,19 +114,7 @@ const LoginCallback: React.FC = () => {
 				flexDirection: 'column',
 				alignItems: 'center',
 			}}>
-			{isLoading ? (
-				<MtlDialog>
-					<MtlDialogTitle>Oasis Login</MtlDialogTitle>
-					<MtlDialogContent>액세스 토큰 획득중 ...</MtlDialogContent>
-				</MtlDialog>
-			) : isError ? (
-				<MtlDialog>
-					<MtlDialogTitle>Oasis Login</MtlDialogTitle>
-					<MtlDialogContent>오류가 발생하였습니다. {error}</MtlDialogContent>
-				</MtlDialog>
-			) : (
-				<Navigate replace to="/" />
-			)}
+			잠시만 기다려주세요 ...
 		</Box>
 	);
 };
